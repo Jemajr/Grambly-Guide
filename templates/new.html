@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grambly Guide</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      h1 {
+        color: #000000; /* Grambling Black */
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      #chat-container {
+        border: 2px solid #cba052; /* Grambling Gold */
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #ffffff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      #chat-messages {
+        height: 400px;
+        overflow-y: auto;
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: #f9f9f9;
+        border: 1px solid #e0e0e0;
+        border-radius: 5px;
+      }
+      #chat-messages p {
+        margin: 10px 0;
+        line-height: 1.5;
+        max-width: 70%;
+        padding: 10px;
+        border-radius: 10px;
+        clear: both;
+      }
+      #chat-messages .user-message {
+        background-color: #cba052; /* Grambling Gold */
+        color: #000000; /* Grambling Black */
+        float: right;
+      }
+      #chat-messages .ai-message {
+        background-color: #f0f0f0;
+        color: #333;
+        float: left;
+      }
+      #user-input {
+        width: 70%;
+        padding: 10px;
+        border: 1px solid #cba052; /* Grambling Gold */
+        border-radius: 5px;
+        font-size: 16px;
+      }
+      button {
+        padding: 10px 20px;
+        background-color: #000000; /* Grambling Black */
+        color: #cba052; /* Grambling Gold */
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s, color 0.3s;
+      }
+      button:hover {
+        background-color: #cba052; /* Grambling Gold */
+        color: #000000; /* Grambling Black */
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Grambly Guide</h1>
+    <div id="chat-container">
+      <div id="chat-messages"></div>
+      <input type="text" id="user-input" placeholder="Welcome to Gram!..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+      function sendMessage() {
+        var userInput = $("#user-input").val();
+        if (userInput.trim() === "") return;
+
+        $("#chat-messages").append(
+          '<p class="user-message">' + userInput + "</p>"
+        );
+        $("#user-input").val("");
+
+        $.ajax({
+          url: "/ask",
+          method: "POST",
+          contentType: "application/json",
+          data: JSON.stringify({ question: userInput }),
+          success: function (response) {
+            $("#chat-messages").append(
+              '<p class="ai-message"><strong>Guide:</strong> ' +
+                response.answer +
+                "</p>"
+            );
+            // Scroll to the bottom of the chat messages
+            $("#chat-messages").scrollTop($("#chat-messages")[0].scrollHeight);
+          },
+        });
+      }
+
+      $("#user-input").keypress(function (e) {
+        if (e.which == 13) {
+          sendMessage();
+        }
+      });
+    </script>
+  </body>
+</html>
